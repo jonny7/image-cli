@@ -1,0 +1,7 @@
+[package]
+name = "imagecli"
+version = "0.1.0"
+authors = ["Jonny7"]
+
+[dependencies]
+image = "*"
