@@ -55,17 +55,10 @@ pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
     let ref mut img = image::open(file)?;
     let save_location = Path::new("./images").join(file);
 
-    if let &ActionKind::Gray = action {
-        let image = imageops::grayscale(img).save(&save_location)?;
-        image.save(&save_location)?;
-        println!("Image grayed");
-    }
-
-    if let &ActionKind::Crop = action {
-        let image = imageops::crop(img, 0, 0, 250, 250).to_image();
-        image.save(&save_location)?;
-        println!("Image cropped");
-    }
-
-    Ok(())
+    Ok(match action {
+        &ActionKind::Gray => imageops::grayscale(img).save(&save_location)?,
+        &ActionKind::Crop => imageops::crop(img, 0, 0, 250, 250).to_image().save(&save_location)?,
+        &ActionKind::Rotate => println!("Not implemented"),
+        &ActionKind::Thumb => println!("Not implemented"),
+    })
 }
