@@ -46,7 +46,7 @@ impl Config {
 
 pub fn run(config: Config) -> Result<(), Box<Error>> {
 
-    process(&config.image_path, &config.action);
+    let _ = process(&config.image_path, &config.action); // is this idiomatic rust to ignore the output?
     Ok(())
 }
 
@@ -56,13 +56,15 @@ pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
     let save_location = Path::new("./images").join(file);
 
     if let &ActionKind::Gray = action {
-        let image = imageops::grayscale(img);
+        let image = imageops::grayscale(img).save(&save_location)?;
         image.save(&save_location)?;
+        println!("Image grayed");
     }
 
     if let &ActionKind::Crop = action {
         let image = imageops::crop(img, 0, 0, 250, 250).to_image();
         image.save(&save_location)?;
+        println!("Image cropped");
     }
 
     Ok(())
