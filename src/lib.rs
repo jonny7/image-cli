@@ -28,17 +28,13 @@ impl Config {
         let image_path = args[1].clone();
         let env_action = &args[2];
 
-        fn action_type(action: &str) -> Result<ActionKind, String> {
-            Ok(match action {
-                "gray" => ActionKind::Gray,
-                "thumb" => ActionKind::Thumb,
-                "rotate" => ActionKind::Rotate,
-                "crop" => ActionKind::Crop,
-                e @ _ => return Err(format!("Unknown action: {}", e)),
-            })
-        }
-
-        let action = action_type(env_action)?;
+        let action = match env_action.as_ref() {
+            "gray" => ActionKind::Gray,
+            "thumb" => ActionKind::Thumb,
+            "rotate" => ActionKind::Rotate,
+            "crop" => ActionKind::Crop,
+            e @ _ => return Err(format!("Unknown action: {}", e)),
+        };
 
         Ok( Config{ image_path, action } )
     }
@@ -46,7 +42,7 @@ impl Config {
 
 pub fn run(config: Config) -> Result<(), Box<Error>> {
 
-    let _ = process(&config.image_path, &config.action); // is this idiomatic rust to ignore the output?
+    process(&config.image_path, &config.action)?;
     Ok(())
 }
 
@@ -54,11 +50,20 @@ pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
 
     let ref mut img = image::open(file)?;
     let save_location = Path::new("./images").join(file);
+    let x = img.width() / 2;
+    let y = img.height() / 2;
+
 
     Ok(match action {
-        &ActionKind::Gray => imageops::grayscale(img).save(&save_location)?,
-        &ActionKind::Crop => imageops::crop(img, 0, 0, 250, 250).to_image().save(&save_location)?,
-        &ActionKind::Rotate => println!("Not implemented"),
-        &ActionKind::Thumb => println!("Not implemented"),
+        &ActionKind::Gray => imageops::grayscale(img)
+            .save(&save_location)?,
+        &ActionKind::Crop => imageops::crop(img, x, y, 250, 250)
+            .to_image()
+            .save(&save_location)?,
+        &ActionKind::Rotate => imageops::rotate180(img)
+            .save(&save_location)?,
+        &ActionKind::Thumb => imageops::crop(img, x, y, 28, 28)
+            .to_image()
+            .save(&save_location)?,
     })
 }
