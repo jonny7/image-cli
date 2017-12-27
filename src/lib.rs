@@ -4,6 +4,9 @@ use image::*;
 
 use std::error::Error;
 use std::path::Path;
+use std::str::FromStr;
+use std::string::String;
+
 
 #[derive(Debug)]
 pub enum ActionKind {
@@ -11,6 +14,20 @@ pub enum ActionKind {
     Thumb,
     Rotate,
     Crop
+}
+
+impl FromStr for ActionKind {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "gray" => Ok(ActionKind::Gray),
+            "thumb" => Ok(ActionKind::Thumb),
+            "rotate" => Ok(ActionKind::Rotate),
+            "crop" => Ok(ActionKind::Crop),
+            e @ _ => Err(format!("Unknown action: {}", e)),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -28,13 +45,7 @@ impl Config {
         let image_path = args[1].clone();
         let env_action = &args[2];
 
-        let action = match env_action.as_ref() {
-            "gray" => ActionKind::Gray,
-            "thumb" => ActionKind::Thumb,
-            "rotate" => ActionKind::Rotate,
-            "crop" => ActionKind::Crop,
-            e @ _ => return Err(format!("Unknown action: {}", e)),
-        };
+        let action = env_action.parse()?;
 
         Ok( Config{ image_path, action } )
     }
@@ -54,15 +65,15 @@ pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
     let y = img.height() / 2;
 
 
-    Ok(match action {
-        &ActionKind::Gray => imageops::grayscale(img)
+    Ok(match *action {
+        ActionKind::Gray => imageops::grayscale(img)
             .save(&save_location)?,
-        &ActionKind::Crop => imageops::crop(img, x, y, 250, 250)
+        ActionKind::Crop => imageops::crop(img, x, y, 250, 250)
             .to_image()
             .save(&save_location)?,
-        &ActionKind::Rotate => imageops::rotate180(img)
+        ActionKind::Rotate => imageops::rotate180(img)
             .save(&save_location)?,
-        &ActionKind::Thumb => imageops::crop(img, x, y, 28, 28)
+        ActionKind::Thumb => imageops::crop(img, x, y, 28, 28)
             .to_image()
             .save(&save_location)?,
     })
