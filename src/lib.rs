@@ -8,7 +8,7 @@ use std::str::FromStr;
 use std::string::String;
 
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ActionKind {
     Gray,
     Thumb,
@@ -45,7 +45,7 @@ impl Config {
         let image_path = args[1].clone();
         let env_action = &args[2];
 
-        let action = env_action.parse()?;
+        let action : ActionKind = env_action.parse()?;
 
         Ok( Config{ image_path, action } )
     }
@@ -77,4 +77,23 @@ pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
             .to_image()
             .save(&save_location)?,
     })
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn valid_action() {
+
+        let action : ActionKind = "gray".parse().unwrap();
+        assert_eq!( action, ActionKind::Gray );
+    }
+
+    #[test]
+    fn invalid_action() {
+
+        let invalid : Result<ActionKind, _> = "invalid".parse();
+        assert!( invalid.is_err() );
+    }
 }
