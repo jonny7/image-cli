@@ -96,4 +96,12 @@ mod test {
         let invalid : Result<ActionKind, _> = "invalid".parse();
         assert!( invalid.is_err() );
     }
+
+    #[test]
+    fn simulate_not_enough_args() {
+
+        let args : Vec<String> = vec![ "only 1 arg".to_string() ];
+        let config : Result<Config, _> = Config::new(&args);
+        assert!( config.is_err() );
+    }
 }
