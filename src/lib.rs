@@ -30,7 +30,7 @@ impl FromStr for ActionKind {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Config {
     pub image_path: String,
     pub action: ActionKind
@@ -103,5 +103,13 @@ mod test {
         let args : Vec<String> = vec![ "only 1 arg".to_string() ];
         let config : Result<Config, _> = Config::new(&args);
         assert!( config.is_err() );
+    }
+
+    #[test]
+    fn simulate_valid_num_args() {
+
+        let args : Vec<String> = vec![ "arg1".to_string(), "image.jpg".to_string(), "gray".to_string() ];
+        let config : Result<Config, _> = Config::new(&args);
+        assert!( config.is_ok() );
     }
 }
