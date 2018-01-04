@@ -51,12 +51,6 @@ impl Config {
     }
 }
 
-pub fn run(config: Config) -> Result<(), Box<Error>> {
-
-    process(&config.image_path, &config.action)?;
-    Ok(())
-}
-
 pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
 
     let ref mut img = image::open(file)?;
