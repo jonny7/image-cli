@@ -25,7 +25,7 @@ impl FromStr for ActionKind {
             "thumb" => Ok(ActionKind::Thumb),
             "rotate" => Ok(ActionKind::Rotate),
             "crop" => Ok(ActionKind::Crop),
-            e @ _ => Err(format!("Unknown action: {}", e)),
+            e => Err(format!("Unknown action: {}", e)),
         }
     }
 }
