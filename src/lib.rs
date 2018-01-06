@@ -51,9 +51,9 @@ impl Config {
     }
 }
 
-pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
+pub fn process(file: &str, action: &ActionKind) -> Result<(), Box<Error>> {
 
-    let ref mut img = image::open(file)?;
+    let img = &mut (image::open(file)?);
     let save_location = Path::new("./images").join(file);
     let x = img.width() / 2;
     let y = img.height() / 2;
