@@ -27,7 +27,7 @@ fn main() {
     });
 
     // run that object and get file
-    if let Err(e) = imagecli::run(config) {
+    if let Err(e) = imagecli::run(&config) {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }

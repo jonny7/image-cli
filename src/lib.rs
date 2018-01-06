@@ -25,7 +25,7 @@ impl FromStr for ActionKind {
             "thumb" => Ok(ActionKind::Thumb),
             "rotate" => Ok(ActionKind::Rotate),
             "crop" => Ok(ActionKind::Crop),
-            e @ _ => Err(format!("Unknown action: {}", e)),
+             e => Err(format!("Unknown action: {}", e)),
         }
     }
 }
@@ -51,15 +51,15 @@ impl Config {
     }
 }
 
-pub fn run(config: Config) -> Result<(), Box<Error>> {
+pub fn run(config: &Config) -> Result<(), Box<Error>> {
 
     process(&config.image_path, &config.action)?;
     Ok(())
 }
 
-pub fn process(file: &String, action: &ActionKind) -> Result<(), Box<Error>> {
+pub fn process(file: &str, action: &ActionKind) -> Result<(), Box<Error>> {
 
-    let ref mut img = image::open(file)?;
+    let img = &mut (image::open(file)?);
     let save_location = Path::new("./images").join(file);
     let x = img.width() / 2;
     let y = img.height() / 2;
